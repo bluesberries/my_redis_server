@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestSimpleStringOK(t *testing.T) {
+func TestDeserializeSimpleStringOK(t *testing.T) {
 	response_encoded := "+OK\r\n"
 	want := regexp.MustCompile("OK")
 	response_decoded, err := Deserialize(response_encoded)
@@ -15,7 +15,7 @@ func TestSimpleStringOK(t *testing.T) {
 	}
 }
 
-func TestSimpleStringPING(t *testing.T) {
+func TestDeserializeSimpleStringPING(t *testing.T) {
 	response_encoded := "+PING\r\n"
 	want := regexp.MustCompile("PING")
 	response_decoded, err := Deserialize(response_encoded)
@@ -25,7 +25,7 @@ func TestSimpleStringPING(t *testing.T) {
 	}
 }
 
-func TestSimpleStringWithoutCRLF(t *testing.T) {
+func TestDeserializeSimpleStringWithoutCRLF(t *testing.T) {
 	response_encoded := "+PING"
 	response_decoded, err := Deserialize(response_encoded)
 
@@ -34,7 +34,7 @@ func TestSimpleStringWithoutCRLF(t *testing.T) {
 	}
 }
 
-func TestSimpleStringEndingOnlyWithLF(t *testing.T) {
+func TestDeserializeSimpleStringEndingOnlyWithLF(t *testing.T) {
 	response_encoded := "+PING\n"
 	response_decoded, err := Deserialize(response_encoded)
 
@@ -43,7 +43,7 @@ func TestSimpleStringEndingOnlyWithLF(t *testing.T) {
 	}
 }
 
-func TestSimpleStringEndingOnlyWithCR(t *testing.T) {
+func TestDeserializeSimpleStringEndingOnlyWithCR(t *testing.T) {
 	response_encoded := "+PING\r"
 	response_decoded, err := Deserialize(response_encoded)
 
@@ -52,7 +52,7 @@ func TestSimpleStringEndingOnlyWithCR(t *testing.T) {
 	}
 }
 
-func TestSimpleStringWithoutLeadingCharacter(t *testing.T) {
+func TestDeserializeSimpleStringWithoutLeadingCharacter(t *testing.T) {
 	response_encoded := "PING"
 	response_decoded, err := Deserialize(response_encoded)
 
@@ -61,7 +61,7 @@ func TestSimpleStringWithoutLeadingCharacter(t *testing.T) {
 	}
 }
 
-func TestSimpleStringWithNonLeadingPlus(t *testing.T) {
+func TestDeserializeSimpleStringWithNonLeadingPlus(t *testing.T) {
 	response_encoded := "P+ING\r\n"
 	response_decoded, err := Deserialize(response_encoded)
 
@@ -70,7 +70,7 @@ func TestSimpleStringWithNonLeadingPlus(t *testing.T) {
 	}
 }
 
-func TestSimpleStringWithCRLFInString(t *testing.T) {
+func TestDeserializeSimpleStringWithCRLFInString(t *testing.T) {
 	response_encoded := "+O\r\nK"
 	response_decoded, err := Deserialize(response_encoded)
 
