@@ -78,3 +78,24 @@ func TestDeserializeSimpleStringWithCRLFInString(t *testing.T) {
 		t.Fatalf(`Deserialize("+O\r\nK") = %q, %v, want match for "", error`, response_decoded, err)
 	}
 }
+
+func TestSerializeSimpleStringOK(t *testing.T) {
+	response := "OK"
+	//want := regexp.MustCompile(`^(\+)(OK)(\r\n)$`)
+	want := regexp.MustCompile(`^(\+)(OK)(\r\n)$`)
+	response_encoded, err := Serialize(response)
+
+	if !want.MatchString(response_encoded) || err != nil {
+		t.Fatalf(`Serialize("OK") = %q, %v, want match for %#q, nill`, response_encoded, err, want)
+	}
+}
+
+func TestSerializeSimpleStringPING(t *testing.T) {
+	response := "PING"
+	want := regexp.MustCompile(`^(\+)(PING)(\r\n)$`)
+	response_encoded, err := Serialize(response)
+
+	if !want.MatchString(response_encoded) || err != nil {
+		t.Fatalf(`Serialize("PING") = %q, %v, want match for %#q, nill`, response_encoded, err, want)
+	}
+}
