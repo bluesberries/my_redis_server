@@ -3,53 +3,54 @@ package resp
 import (
 	"errors"
 	"regexp"
-	"strconv"
 )
 
 // Deserialize encoded string
-func Deserialize(response_encoded string) (string, error) {
-	if isEncodedSimpleString(response_encoded) {
-		return deserializeSimpleString(response_encoded), nil
-	} else if isEncodedBulkString(response_encoded) {
-		return deserializeBulkString(response_encoded)
+func Deserialize(encoded_message []byte) ([]byte, error) {
+	if isEncodedSimpleString(encoded_message) {
+		return deserializeSimpleString(encoded_message), nil
+	} else if isEncodedBulkString(encoded_message) {
+		return deserializeBulkString(encoded_message)
 	}
-	return "", errors.New("invalid response")
+	return nil, errors.New("invalid response")
 }
 
 // Helper functions: Simple String
-func isEncodedSimpleString(s string) bool {
+func isEncodedSimpleString(encoded_message []byte) bool {
 	re := regexp.MustCompile(`^(\+)(\w)+(\r\n)$`)
-	match := re.MatchString(s)
+	match := re.Match(encoded_message)
 	return match
 }
 
-func deserializeSimpleString(response string) string {
+func deserializeSimpleString(encoded_message []byte) []byte {
 	re := regexp.MustCompile(`\w+`)
-	response_decoded := re.FindString(response)
+	response_decoded := re.Find(encoded_message)
 	return response_decoded
 }
 
 // Helper functions: Bulk String
-func isEncodedBulkString(s string) bool {
+func isEncodedBulkString(encoded_message []byte) bool {
 	re := regexp.MustCompile(`^(\$)[0-9]+(\r\n)(\w)+(\r\n)$`)
-	match := re.MatchString(s)
+	match := re.Match(encoded_message)
 	return match
 }
 
-func deserializeBulkString(response string) (string, error) {
+func deserializeBulkString(encoded_message []byte) ([]byte, error) {
 	re := regexp.MustCompile(`(\S)+(\w)+(\S)+`)
-	response_decoded := re.FindString(response)
+	response_decoded := re.Find(encoded_message)
 
 	re = regexp.MustCompile(`[0-9]+`)
-	response_length_str := re.FindString(response)
-	response_length, err := strconv.Atoi(response_length_str)
-	if err != nil {
-		panic(err)
-	}
+	//response_length_str := re.Find(encoded_message)
+	/*
+		response_length, err := strconv.Atoi(response_length_str)
+		if err != nil {
+			panic(err)
+		}
 
-	if len(response_decoded) != response_length {
-		return response_decoded, errors.New("response decoded doesn't match expected length")
-	}
+		if len(response_decoded) != response_length {
+			return response_decoded, errors.New("response decoded doesn't match expected length")
+		}
+	*/
 
 	return response_decoded, nil
 }
