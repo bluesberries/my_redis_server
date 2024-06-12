@@ -30,7 +30,7 @@ func deserializeSimpleString(encoded_message []byte) []byte {
 
 // Helper functions: Bulk String
 func isEncodedBulkString(encoded_message []byte) bool {
-	re := regexp.MustCompile(`^(\$)[0-9]+(\r\n)(\w)+(\r\n)$`)
+	re := regexp.MustCompile(`(\$)[0-9]+(\r\n)(\w)+(\r\n)$`)
 	match := re.Match(encoded_message)
 	return match
 }

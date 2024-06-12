@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net"
+
+	"github.com/bluesberries/my_redis_server/resp"
 )
 
 func main() {
@@ -45,6 +47,17 @@ func handleClient(conn net.Conn) {
 			return
 		}
 		//Process and use the data (here, we'll just print it)
-		fmt.Printf("Received: %s\n", buffer[:n])
+		decoded_response, err := resp.Deserialize(buffer[:n])
+		fmt.Printf("Received:\n %s\n", string(decoded_response))
+
+		//data := []byte("$4\r\nPONG\r\n")
+		data := []byte("+PONG\r\n")
+		_, err = conn.Write(data)
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+		return
 	}
+
 }
