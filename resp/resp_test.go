@@ -1,4 +1,4 @@
-package myredisserver
+package resp
 
 import (
 	"regexp"
@@ -81,7 +81,6 @@ func TestDeserializeSimpleStringWithCRLFInString(t *testing.T) {
 
 func TestSerializeSimpleStringOK(t *testing.T) {
 	response := "OK"
-	//want := regexp.MustCompile(`^(\+)(OK)(\r\n)$`)
 	want := regexp.MustCompile(`^(\+)(OK)(\r\n)$`)
 	response_encoded, err := Serialize(response)
 
@@ -97,5 +96,51 @@ func TestSerializeSimpleStringPING(t *testing.T) {
 
 	if !want.MatchString(response_encoded) || err != nil {
 		t.Fatalf(`Serialize("PING") = %q, %v, want match for %#q, nill`, response_encoded, err, want)
+	}
+}
+
+func TestDeserializeBulkString(t *testing.T) {
+	response := "$4\r\nPING\r\n"
+	want := regexp.MustCompile("PING")
+
+	response_decoded, err := Deserialize(response)
+	if !want.MatchString(response_decoded) || err != nil {
+		t.Fatalf(`Deserialize("$4\r\nPING\r\n") = %q, %v, want match for %#q, nill`, response_decoded, err, want)
+	}
+}
+
+func TestDeserializeBulkStringMissingCLRF1(t *testing.T) {
+	response := "$4PING\r\n"
+	response_decoded, err := Deserialize(response)
+
+	if response_decoded != "" || err == nil {
+		t.Fatalf(`Deserialize("$4PING\r\n") = %q, %v, want match for "", error`, response_decoded, err)
+	}
+}
+
+func TestDeserializeBulkStringMissingCLRF2(t *testing.T) {
+	response := "$4\r\nPING"
+	response_decoded, err := Deserialize(response)
+
+	if response_decoded != "" || err == nil {
+		t.Fatalf(`Deserialize("$4\r\nPING") = %q, %v, want match for "", error`, response_decoded, err)
+	}
+}
+
+func TestDeserializeBulkStringMissingLength(t *testing.T) {
+	response := "$\r\nPING\r\n"
+	response_decoded, err := Deserialize(response)
+
+	if response_decoded != "" || err == nil {
+		t.Fatalf(`Deserialize("$\r\nPING\r\n") = %q, %v, want match for "", error`, response_decoded, err)
+	}
+}
+
+func TestDeserializeBulkStringMissingData(t *testing.T) {
+	response := "$4\r\n\r\n"
+	response_decoded, err := Deserialize(response)
+
+	if response_decoded != "" || err == nil {
+		t.Fatalf(`Deserialize("$\r\n\r\n") = %q, %v, want match for "", error`, response_decoded, err)
 	}
 }
